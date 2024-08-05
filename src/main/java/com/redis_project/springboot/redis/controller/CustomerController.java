@@ -12,9 +12,10 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.redis_project.springboot.redis.common.Urls;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api")
 public class CustomerController {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
@@ -22,21 +23,21 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping
+    @GetMapping(Urls.CUSTOMERS_BASE)
     public ResponseEntity<Map<String, Object>> getAllCustomers() {
         logger.info("Getting all customers");
         List<CustomerDTO> customers = customerService.getAllCustomers();
         return ResponseUtil.getAllDataSuccess(customers);
     }
 
-    @PostMapping("/create")
+    @PostMapping(Urls.CREATE_CUSTOMER)
     public ResponseEntity<Map<String, Object>> createCustomer(@RequestBody CustomerDTO customerDTO) {
         logger.info("Creating customer: {}", customerDTO);
         CustomerDTO createdCustomer = customerService.saveCustomer(customerDTO);
         return ResponseUtil.createSuccess(createdCustomer);
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping(Urls.UPDATE_CUSTOMER)
     public ResponseEntity<Map<String, Object>> updateCustomer(@PathVariable Integer id,
             @RequestBody CustomerDTO customerDTO) {
         logger.info("Update customer with id: {}", id);
@@ -44,14 +45,14 @@ public class CustomerController {
         return ResponseUtil.createSuccess(updateCustomer);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(Urls.GET_CUSTOMER_BYID)
     public ResponseEntity<Map<String, Object>> getCustomer(@PathVariable Integer id) {
         logger.info("Getting customer with id: {}", id);
         CustomerDTO customer = customerService.getCustomer(id);
         return ResponseUtil.getDataByIdSuccess(customer);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(Urls.DELETE_CUSTOMER)
     public ResponseEntity<Map<String, Object>> deleteCustomer(@PathVariable Integer id) {
         logger.info("Deleting customer with id: {}", id);
         customerService.deleteCustomer(id);

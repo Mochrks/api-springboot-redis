@@ -28,38 +28,38 @@ public class CustomerService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    // eksekusi redis --> db postgreedb
-    // private ScheduledExecutorService scheduler =
-    // Executors.newScheduledThreadPool(1);
+    // eksekusi redis-->
+    // db postgreedb
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    // public CustomerDTO saveCustomer(CustomerDTO addCustomerDTO) {
-    // final LocalDateTime now = LocalDateTime.now();
-    // logger.info("Saving customer to Redis: {}", addCustomerDTO);
+    public CustomerDTO saveCustomer(CustomerDTO addCustomerDTO) {
+        final LocalDateTime now = LocalDateTime.now();
+        logger.info("Saving customer to Redist: {}", addCustomerDTO);
 
-    // Customer customer = Customer.builder()
-    // .id(28)
-    // .name(addCustomerDTO.getName())
-    // .email(addCustomerDTO.getEmail())
-    // .phone(addCustomerDTO.getPhone())
-    // .address(addCustomerDTO.getAddress())
-    // .createdAt(now)
-    // .updatedAt(now)
-    // .build();
+        Customer customer = Customer.builder()
+                .id(54)
+                .name(addCustomerDTO.getName())
+                .email(addCustomerDTO.getEmail())
+                .phone(addCustomerDTO.getPhone())
+                .address(addCustomerDTO.getAddress())
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
 
-    // CustomerDTO savedCustomerDTO = toDTO(customer);
-    // redisTemplate.opsForValue().set(REDIS_PREFIX + savedCustomerDTO.getId(),
-    // savedCustomerDTO);
+        CustomerDTO savedCustomerDTO = toDTO(customer);
+        redisTemplate.opsForValue().set(REDIS_PREFIX + savedCustomerDTO.getId(),
+                savedCustomerDTO);
 
-    // // set data scheduller 10 detik dari redis akan otomatis ke simpan di
-    // postgreedb
-    // scheduler.schedule(() -> {
-    // logger.info("Saving customer from Redis to database: {}", savedCustomerDTO);
-    // customerRepository.save(customer);
-    // redisTemplate.delete(REDIS_PREFIX + savedCustomerDTO.getId());
-    // }, 10, TimeUnit.SECONDS);
+        // set data scheduller 10 detik dari redis akan otomatis ke simpan di
+        // postgreedb
+        scheduler.schedule(() -> {
+            logger.info("Saving customer from Redis to database: {}", savedCustomerDTO);
+            customerRepository.save(customer);
+            redisTemplate.delete(REDIS_PREFIX + savedCustomerDTO.getId());
+        }, 10, TimeUnit.SECONDS);
 
-    // return savedCustomerDTO;
-    // }
+        return savedCustomerDTO;
+    }
 
     public List<CustomerDTO> getAllCustomers() {
         logger.info("Fetching all customers from database");
@@ -67,24 +67,25 @@ public class CustomerService {
         return customers.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    public CustomerDTO saveCustomer(CustomerDTO AddcustomerDTO) {
-        final LocalDateTime now = LocalDateTime.now();
-        logger.info("Saving customer: {}", AddcustomerDTO);
-        Customer customer = Customer.builder()
-                .name(AddcustomerDTO.getName())
-                .email(AddcustomerDTO.getEmail())
-                .phone(AddcustomerDTO.getPhone())
-                .address(AddcustomerDTO.getAddress())
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+    // public CustomerDTO saveCustomer(CustomerDTO AddcustomerDTO) {
+    // final LocalDateTime now = LocalDateTime.now();
+    // logger.info("Saving customer: {}", AddcustomerDTO);
+    // Customer customer = Customer.builder()
+    // .name(AddcustomerDTO.getName())
+    // .email(AddcustomerDTO.getEmail())
+    // .phone(AddcustomerDTO.getPhone())
+    // .address(AddcustomerDTO.getAddress())
+    // .createdAt(now)
+    // .updatedAt(now)
+    // .build();
 
-        Customer savedCustomer = customerRepository.save(customer);
-        logger.info("Customer saved and cached: {}", savedCustomer);
-        CustomerDTO savedCustomerDTO = toDTO(savedCustomer);
-        redisTemplate.opsForValue().set(REDIS_PREFIX + savedCustomerDTO.getId(), savedCustomerDTO);
-        return savedCustomerDTO;
-    }
+    // Customer savedCustomer = customerRepository.save(customer);
+    // logger.info("Customer saved and cached: {}", savedCustomer);
+    // CustomerDTO savedCustomerDTO = toDTO(savedCustomer);
+    // redisTemplate.opsForValue().set(REDIS_PREFIX + savedCustomerDTO.getId(),
+    // savedCustomerDTO);
+    // return savedCustomerDTO;
+    // }
 
     public CustomerDTO updateCustomer(Integer id, CustomerDTO updateCust) {
         final LocalDateTime now = LocalDateTime.now();
